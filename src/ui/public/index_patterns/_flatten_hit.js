@@ -24,7 +24,7 @@ define(function (require) {
           var hasValidMapping = (fields[key] && fields[key].type !== 'conflict');
           var isValue = !_.isPlainObject(val);
 
-          if (hasValidMapping === undefined && val.constructor === Array) {
+          if (hasValidMapping === undefined && val && val.constructor === Array) {
             _.forEach(val, function (item) {
               flatten(item, key);
             });
