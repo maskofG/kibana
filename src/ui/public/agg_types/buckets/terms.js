@@ -153,7 +153,7 @@ define(function (require) {
             }
 
             // if the target aggregation is nested, refer to it by its nested location
-            if (orderAgg.params.nested && (orderAgg.params.nested.path || orderAgg.params.nested.reverse)) {
+            if (orderAgg.nestedPath || orderAgg.reverseNested) {
               orderAggId = 'nested_' + orderAggId + '>' + orderAggId;
             }
 

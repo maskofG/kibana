@@ -196,9 +196,32 @@ define(function (require) {
      * @return {void|Object} - if the config has a dsl representation, it is
      *                         returned, else undefined is returned
      */
-    AggConfig.prototype.toDsl = function () {
+    AggConfig.prototype.toDsl = function (prevNestedPath) {
       if (this.type.hasNoDsl) return;
-      var output = this.write();
+      var output;
+      if (this.params.orderAgg) {
+        var reverseNested = false;
+        var nestedPath = (this.params.orderAgg.params.field ? this.params.orderAgg.params.field.nestedPath : undefined);
+        var dsl;
+
+        if (prevNestedPath !== undefined) {
+          if (nestedPath === undefined || (nestedPath !== prevNestedPath && prevNestedPath.startsWith(nestedPath))) {
+            reverseNested = true;
+          }
+        }
+
+        if (nestedPath !== undefined) {
+          if (nestedPath === prevNestedPath) {
+            nestedPath = undefined;
+          } else {
+            prevNestedPath = nestedPath;
+          }
+        }
+        this.params.orderAgg.nestedPath = nestedPath;
+        this.params.orderAgg.reverseNested = reverseNested;
+      }
+
+      output = this.write();
 
       var configDsl = {};
       configDsl[this.type.dslName || this.type.name] = output.params;
@@ -207,7 +230,25 @@ define(function (require) {
       if (output.subAggs) {
         var subDslLvl = configDsl.aggs || (configDsl.aggs = {});
         output.subAggs.forEach(function nestAdhocSubAggs(subAggConfig) {
-          subAggConfig.toDslNested(subDslLvl);
+          var reverseNested = false;
+          var nestedPath = (subAggConfig.params.field ? subAggConfig.params.field.nestedPath : undefined);
+          var dsl;
+
+          if (prevNestedPath !== undefined) {
+            if (nestedPath === undefined || (nestedPath !== prevNestedPath && prevNestedPath.startsWith(nestedPath))) {
+              reverseNested = true;
+            }
+          }
+
+          if (nestedPath !== undefined) {
+            if (nestedPath === prevNestedPath) {
+              nestedPath = undefined;
+            } else {
+              prevNestedPath = nestedPath;
+            }
+          }
+
+          subAggConfig.toDslNested(subDslLvl, nestedPath, reverseNested);
         });
       }
 
@@ -228,7 +269,7 @@ define(function (require) {
      */
     AggConfig.prototype.toDslNested = function (destination, nestedPath, reverseNested) {
       var id = this.id;
-      var dsl = this.toDsl();
+      var dsl = this.toDsl(nestedPath);
       var result = dsl; // save the original dsl to return later
 
       if (nestedPath || reverseNested) {
