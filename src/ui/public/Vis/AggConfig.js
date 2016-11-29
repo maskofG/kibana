@@ -16,6 +16,7 @@ define(function (require) {
 
       // resolve the params
       self.fillDefaults(opts.params);
+
     }
 
     /**
@@ -272,6 +273,17 @@ define(function (require) {
       var dsl = this.toDsl(nestedPath);
       var result = dsl; // save the original dsl to return later
 
+      if (this.params.countByParent) {
+        var countId = 'count_' + this.id;
+        var aggsKey = 'aggs';
+        var countAgg = {};
+        countAgg[countId] = {
+          reverse_nested : {}
+        };
+        dsl[aggsKey] = countAgg;
+      }
+
+
       if (nestedPath || reverseNested) {
         // save the current dsl as a sub-agg of the nested agg
         var aggs = {};
@@ -338,7 +350,10 @@ define(function (require) {
       return this.type.getResponseAggs(this) || [this];
     };
 
-    AggConfig.prototype.getValue = function (bucket) {
+    AggConfig.prototype.getValue = function (id, bucket) {
+      if (bucket['count_' + id]) {
+        return this.type.getValue(this, bucket['count_' + id]);
+      }
       return this.type.getValue(this, bucket);
     };
 

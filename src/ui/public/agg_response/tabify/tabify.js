@@ -14,7 +14,7 @@ define(function (require) {
         doc_count: esResponse.hits.total
       });
 
-      collectBucket(write, topLevelBucket);
+      collectBucket(write, undefined, topLevelBucket);
 
       return write.response();
     }
@@ -28,7 +28,7 @@ define(function (require) {
      * @param {undefined|string} key - the key where the bucket was found
      * @returns {undefined}
      */
-    function collectBucket(write, bucket, key) {
+    function collectBucket(write, id, bucket, key) {
       var agg = write.aggStack.shift();
 
       switch (agg.schema.group) {
@@ -41,12 +41,12 @@ define(function (require) {
             var splitting = write.canSplit && agg.schema.name === 'split';
             if (splitting) {
               write.split(agg, buckets, function forEachBucket(subBucket, key) {
-                collectBucket(write, subBucket, agg.getKey(subBucket, key));
+                collectBucket(write, agg.id, subBucket, agg.getKey(subBucket, key));
               });
             } else {
               buckets.forEach(function (subBucket, key) {
                 write.cell(agg, agg.getKey(subBucket, key), function () {
-                  collectBucket(write, subBucket, agg.getKey(subBucket, key));
+                  collectBucket(write, agg.id, subBucket, agg.getKey(subBucket, key));
                 });
               });
             }
@@ -64,14 +64,14 @@ define(function (require) {
           }
           break;
         case 'metrics':
-          var value = agg.getValue(bucket);
+          var value = agg.getValue(id, bucket);
           write.cell(agg, value, function () {
             if (!write.aggStack.length) {
               // row complete
               write.row();
             } else {
               // process the next agg at this same level
-              collectBucket(write, bucket, key);
+              collectBucket(write, agg.id, bucket, key);
             }
           });
           break;

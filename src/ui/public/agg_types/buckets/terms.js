@@ -85,6 +85,7 @@ define(function (require) {
 
             $scope.$watch('responseValueAggs', updateOrderAgg);
             $scope.$watch('agg.params.orderBy', updateOrderAgg);
+            $scope.$watch('agg.params.countByParent', updateOrderAgg);
 
             function updateOrderAgg() {
               var agg = $scope.agg;

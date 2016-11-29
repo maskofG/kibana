@@ -113,6 +113,12 @@ define(function (require) {
           advanced: true
         });
 
+        this.params.push({
+          name: 'countByParent',
+          type: 'boolean',
+          write: _.noop
+        });
+
         this.params = new AggParams(this.params);
       }
 

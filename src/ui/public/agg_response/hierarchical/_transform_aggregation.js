@@ -8,7 +8,7 @@ define(function (require) {
         var aggConfigResult = new AggConfigResult(
           agg,
           parent && parent.aggConfigResult,
-          metric.getValue(bucket),
+          metric.getValue(agg.id, bucket),
           agg.getKey(bucket)
         );
 
