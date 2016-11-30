@@ -277,6 +277,9 @@ define(function (require) {
         var countId = 'count_' + this.id;
         var aggsKey = 'aggs';
         var countAgg = {};
+        if (dsl.aggs) {
+          countAgg = dsl.aggs;
+        }
         countAgg[countId] = {
           reverse_nested : {}
         };
