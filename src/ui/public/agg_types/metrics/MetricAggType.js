@@ -29,7 +29,7 @@ define(function (require) {
       // `Count` handles empty sets properly
       if (!bucket[agg.id] && isSettableToZero) return 0;
 
-      return bucket[agg.id] && bucket[agg.id].value;
+      return (bucket[agg.id] || bucket['nested_' + agg.id][agg.id]).value;
     };
 
     /**

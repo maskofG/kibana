@@ -67,7 +67,7 @@ class BaseOptimizer {
     return {
       context: fromRoot('.'),
       entry: this.bundles.toWebpackEntries(),
-
+      node: {fs: 'empty'},
       devtool: this.sourceMaps,
       profile: this.profile || false,
 
