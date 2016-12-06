@@ -34,5 +34,13 @@
       <strong>No Compatible Fields:</strong> The "{{ vis.indexPattern.id }}" index pattern does not contain any of the following field types: {{ agg.type.params.byName.field.filterFieldTypes | commaList:false }}
     </p>
   </div>
+  
+  <p ng-show="indexedFields.byName[agg.params.field.name].nestedPath !== undefined">
+  <br>
+  <label for="countBy">
+	  <input name="countBy" type="checkbox" ng-model="agg.params.countByParent" ng-change="aggParam.onChange(agg)">
+    Use count of parent document
+  </label>
+  </p>
 
 </div>

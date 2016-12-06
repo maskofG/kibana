@@ -59,7 +59,7 @@ define(function (require) {
       }
 
       // iterate through all the buckets
-      _.each(extractBuckets(data[agg.id], agg), function (bucket) {
+      _.each(extractBuckets(data[agg.id] || data['nested_' + agg.id][agg.id]), function (bucket) {
 
         let _record = _.flattenDeep([record, bucket.key]);
         _.each(metrics, function (metric) {

@@ -13,11 +13,20 @@ define(function (require) {
       };
       filter.meta.field = field.name;
     } else {
-      filter.query = { match: {} };
-      filter.query.match[field.name] = {
-        query: value,
-        type: 'phrase'
-      };
+      // check for nested
+      if (indexPattern.fields.byName[field.name].nestedPath) {
+        filter.query = { nested : { path : indexPattern.fields.byName[field.name].nestedPath, query : { match : {}}}};
+        filter.query.nested.query.match[field.name] = {
+          query: value,
+          type: 'phrase'
+        };
+      } else {
+        filter.query = { match: {} };
+        filter.query.match[field.name] = {
+          query: value,
+          type: 'phrase'
+        };
+      }
     }
     return filter;
   };

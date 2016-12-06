@@ -7,10 +7,14 @@ define(function (require) {
       let start = moment(key);
       let interval = agg.buckets.getInterval();
 
-      return buildRangeFilter(agg.params.field, {
+      let filter = buildRangeFilter(agg.params.field, {
         gte: start.valueOf(),
         lte: start.add(interval).subtract(1, 'ms').valueOf()
       }, agg.vis.indexPattern);
+      if (agg.params.nested) {
+        filter = { 'nested' : { 'query' : { 'bool' : { 'must' : [{filter}]}}, 'path' : agg.params.nested.path}};
+      }
+      return filter;
     };
 
   };

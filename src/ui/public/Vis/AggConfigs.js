@@ -48,8 +48,9 @@ define(function (require) {
 
     AggConfigs.prototype.toDsl = function () {
       let dslTopLvl = {};
-      let dslLvlCursor;
+      let dslLvlCursor = dslTopLvl; // start at the top level;
       let nestedMetrics;
+      let prevNestedPath;
 
       if (this.vis.isHierarchical()) {
         // collect all metrics, and filter out the ones that we won't be copying
@@ -71,20 +72,25 @@ define(function (require) {
         return !config.type.hasNoDsl;
       })
       .forEach(function nestEachConfig(config, i, list) {
-        if (!dslLvlCursor) {
-          // start at the top level
-          dslLvlCursor = dslTopLvl;
-        } else {
-          let prevConfig = list[i - 1];
-          let prevDsl = dslLvlCursor[prevConfig.id];
+        let reverseNested = false;
+        let nestedPath = (config.params.field ? config.params.field.nestedPath : undefined);
+        let dsl;
 
-          // advance the cursor and nest under the previous agg, or
-          // put it on the same level if the previous agg doesn't accept
-          // sub aggs
-          dslLvlCursor = prevDsl.aggs || dslLvlCursor;
+        if (prevNestedPath !== undefined) {
+          if (nestedPath === undefined || (nestedPath !== prevNestedPath && prevNestedPath.startsWith(nestedPath))) {
+            reverseNested = true;
+          }
         }
 
-        let dsl = dslLvlCursor[config.id] = config.toDsl();
+        if (nestedPath !== undefined) {
+          if (nestedPath === prevNestedPath) {
+            nestedPath = undefined;
+          } else {
+            prevNestedPath = nestedPath;
+          }
+        }
+        dsl = config.toDslNested(dslLvlCursor, nestedPath, reverseNested);
+
         let subAggs;
 
         if (config.schema.group === 'buckets' && i < list.length - 1) {
@@ -94,9 +100,18 @@ define(function (require) {
 
         if (subAggs && nestedMetrics) {
           nestedMetrics.forEach(function (agg) {
-            subAggs[agg.config.id] = agg.dsl;
+            if (typeof agg === AggConfig) {
+              agg.toDslNested(subAggs);
+            } else {
+              subAggs[agg.config.id] = agg.dsl;
+            }
           });
         }
+
+          // advance the cursor and nest under the previous agg, or
+          // put it on the same level if the previous agg doesn't accept
+          // sub aggs
+        dslLvlCursor = dsl.aggs || dslLvlCursor;
       });
 
       return dslTopLvl;

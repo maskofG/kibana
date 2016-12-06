@@ -128,7 +128,7 @@ describe('AggType Class', function () {
           });
 
           expect(aggType.params).to.be.an(AggParams);
-          expect(aggType.params.length).to.be(2);
+          expect(aggType.params.length).to.be(4);
           expect(aggType.params[0].name).to.be('json');
           expect(aggType.params[1].name).to.be('customLabel');
         });
@@ -139,7 +139,7 @@ describe('AggType Class', function () {
             customLabels: false
           });
 
-          expect(aggType.params.length).to.be(1);
+          expect(aggType.params.length).to.be(3);
           expect(aggType.params[0].name).to.be('json');
         });
 
@@ -148,7 +148,7 @@ describe('AggType Class', function () {
             {name: 'one'},
             {name: 'two'}
           ];
-          let paramLength = params.length + 2; // json and custom label are always appended
+          let paramLength = params.length + 4; // json and custom label are always appended
 
           let aggType = new AggType({
             name: 'bucketeer',
