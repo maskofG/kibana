@@ -23,6 +23,13 @@ export default function FlattenHitProvider(config) {
         let hasValidMapping = (fields[key] && fields[key].type !== 'conflict');
         let isValue = !_.isPlainObject(val);
 
+        if (hasValidMapping === undefined && val && val.constructor === Array) {
+          _.forEach(val, function (item) {
+            flatten(item, key);
+          });
+          return;
+        }
+
         if (hasValidMapping || isValue) {
           flat[key] = val;
           return;
