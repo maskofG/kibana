@@ -282,7 +282,13 @@ boolExpression
 
 unaryExpression
     : NOT e
-      { $$ = new yy.Not($2); }
+      { if ($2 instanceof yy.ScopedExpr && $2.exists) {
+          $2.negate = true;
+          $$ = $2;
+        } else {
+            $$ = new yy.Not($2); 
+        }
+      }
     | EXISTS e
       { if ($2 instanceof yy.ScopedExpr) {
           $2.exists = true;

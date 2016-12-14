@@ -367,13 +367,19 @@ scope.ScopedExpr = function (expression) {
   this.nestedPath = expression.nestedPath;
   this.expression.nestedPath = undefined;
   this.exists = false;
+  this.negate = false;
 };
 
 scope.ScopedExpr.prototype = {
 
   toJson : function () {
     if (this.nestedPath) {
-      return '{"nested":{"path":"' + this.nestedPath + '","query":' + this.expression.toJson() + '}}';
+      var json = '{"nested":{"path":"' + this.nestedPath + '","query":' + this.expression.toJson() + '}}';
+      if (this.exists && !this.negate) {
+        return '{"bool":{"filter" : ' + json + '}}';
+      } else if (this.exists && this.negate) {
+        return '{"bool":{"must_not" : ' + json + '}}';
+      }
     }
     return this.expression.toJson();
   }
