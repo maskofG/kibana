@@ -61,6 +61,9 @@ define(function (require) {
       } else {
         if (!esQueryStringPattern.test(text)) {
           try {
+            if (ngModel.filter) {
+              ngModel.filter.base_query = text;
+            }
             var parsed = parser.parse(text).toJson();
             return JSON.parse(parsed);
           } catch (e) {
