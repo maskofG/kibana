@@ -76,6 +76,14 @@ define(function (require) {
         let nestedPath = (config.params.field ? config.params.field.nestedPath : undefined);
         let dsl;
 
+        if (config.params.filters) {
+          config.params.filters.forEach(function findNestedPath(filter) {
+            if (filter.input.query.nested) {
+              nestedPath = filter.input.query.nested.path;
+            }
+          });
+        }
+
         if (prevNestedPath !== undefined) {
           if (nestedPath === undefined || (nestedPath !== prevNestedPath && prevNestedPath.startsWith(nestedPath))) {
             reverseNested = true;

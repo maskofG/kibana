@@ -16,7 +16,7 @@ define(function (require) {
         {
           name: 'filters',
           editor: require('ui/agg_types/controls/filters.html'),
-          default: [ {input: {}, label: ''} ],
+          default: [ {input: {}, label: '', base_query: ''} ],
           write: function (aggConfig, output) {
             let inFilters = aggConfig.params.filters;
             if (!_.size(inFilters)) return;
@@ -30,7 +30,7 @@ define(function (require) {
 
               decorateQuery(query);
 
-              let label = filter.label || _.get(query, 'query_string.query') || angular.toJson(query);
+              let label = filter.label || _.get(query, 'query_string.query') || filter.base_query || angular.toJson(query);
               filters[label] = input;
             }, {});
 
