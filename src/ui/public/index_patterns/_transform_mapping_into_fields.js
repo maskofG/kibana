@@ -41,7 +41,7 @@ export default function transformMappingIntoFields(Private, kbnIndex, config) {
             if (response.hierarchy[name]) {
               mapping[nestedKey] = response.hierarchy[name];
             }
-            fields[name] = _.pick(mapping, 'type', 'indexed', 'analyzed', 'doc_values');
+            fields[name] = _.pick(mapping, 'type', 'indexed', 'analyzed', 'doc_values', 'nestedPath');
           }
         });
       });
