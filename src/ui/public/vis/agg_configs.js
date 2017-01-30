@@ -142,7 +142,9 @@ export default function AggConfigsFactory(Private) {
           }
         });
       } else {
-        prevNestedPath = undefined;
+        if (dsl.aggs === undefined) {
+          prevNestedPath = undefined;
+        }
       }
 
         // advance the cursor and nest under the previous agg, or
