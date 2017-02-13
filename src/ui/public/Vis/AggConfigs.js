@@ -114,6 +114,10 @@ define(function (require) {
               subAggs[agg.config.id] = agg.dsl;
             }
           });
+        } else {
+          if (dsl.aggs === undefined) {
+            prevNestedPath = undefined;
+          }
         }
 
           // advance the cursor and nest under the previous agg, or
