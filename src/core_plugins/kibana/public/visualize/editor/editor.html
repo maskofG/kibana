@@ -60,6 +60,29 @@
               >
                 <span aria-hidden="true" class="fa fa-search"></span>
               </button>
+                <!-- Kibana query language -->
+		    <button
+		      ng-if="state.kibanaQuery"
+		      ng-click="state.kibanaQuery = false"
+		      aria-label="Enable Nested Query Language"
+		      tooltip="Enable Nested Query Language"
+		      tooltip-append-to-body="true"
+		      type="button"
+		      class="btn btn-xs">
+		      <i aria-hidden="true" class="fa fa-toggle-on"></i>
+		    </button>
+		
+		    <!-- nested Query Language -->
+		    <button
+		      ng-if="!state.kibanaQuery"
+		      ng-click="state.kibanaQuery = true"
+		      aria-label="Enable Kibana Query Language"
+		      tooltip="Enable Kibana Query Language"
+		      tooltip-append-to-body="true"
+		      type="button"
+		      class="btn btn-xs">
+		      <i aria-hidden="true" class="fa fa-toggle-off"></i>
+		    </button>
             </div>
             <kbn-typeahead-items></kbn-typeahead-items>
           </div>

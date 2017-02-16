@@ -3,7 +3,6 @@ import jison from 'jison';
 import DecorateQueryProvider from 'ui/courier/data_source/_decorate_query';
 export default function GetQueryFromUser(es, Private) {
   let decorateQuery = Private(DecorateQueryProvider);
-  let esQueryStringPattern = /^[^"=<>]*:/;
   let bnf = require('raw!./query_lang.jison');
   let ngModel;
   let parser = new jison.Parser(bnf, {
@@ -49,7 +48,7 @@ export default function GetQueryFromUser(es, Private) {
         return getQueryStringQuery(text);
       }
     } else {
-      if (!esQueryStringPattern.test(text)) {
+      if (!ngModel.$parent.state.kibanaQuery) {
         try {
           if (ngModel.filter) {
             ngModel.filter.base_query = text;
